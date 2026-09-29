@@ -18,7 +18,6 @@ export async function resetDb() {
 let n = 0;
 type GymOpts = { plan?: SaasPlan; status?: SubscriptionStatus; trialEndsAt?: Date | null; currentPeriodEnd?: Date | null };
 
-// Create a gym + owner and return the owner's token
 export async function makeGym(slug: string, opts: GymOpts = {}) {
   const gym = await prisma.gym.create({
     data: {
