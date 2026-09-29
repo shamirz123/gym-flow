@@ -12,7 +12,8 @@ if (useCloudinary) {
   cloudinary.config({ cloud_name: env.CLOUDINARY_CLOUD_NAME, api_key: env.CLOUDINARY_API_KEY, api_secret: env.CLOUDINARY_API_SECRET });
 }
 
-export const UPLOAD_DIR = path.resolve(import.meta.dirname, "../../uploads");
+// Vercel only allows writing to /tmp (use Cloudinary there — /tmp files do not last)
+export const UPLOAD_DIR = process.env.VERCEL ? "/tmp/uploads" : path.resolve(import.meta.dirname, "../../uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const TYPES: Record<string, string> = { "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif" };

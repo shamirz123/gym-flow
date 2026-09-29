@@ -6,7 +6,8 @@ import { z } from "zod";
 dotenv.config({ path: path.resolve(import.meta.dirname, "../.env"), quiet: true });
 
 // Gyms are in Pakistan: dates and months always use PKT (even if the server runs in UTC)
-process.env.TZ ||= "Asia/Karachi";
+// (Vercel sets TZ=:UTC itself, so override it there)
+if (!process.env.TZ || process.env.VERCEL) process.env.TZ = "Asia/Karachi";
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
