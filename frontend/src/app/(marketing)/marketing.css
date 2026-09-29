@@ -1,0 +1,69 @@
+/* ================= GymFlow SaaS landing ================= */
+.mk { min-height: 100vh; background: var(--bg); }
+.mk-nav { position: sticky; top: 0; z-index: 50; background: rgba(10, 10, 12, 0.8); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.mk-nav .container { display: flex; align-items: center; gap: 28px; height: 70px; }
+.mk-nav nav { display: flex; gap: 24px; margin-left: auto; align-items: center; }
+.mk-nav nav a:not(.btn) { color: #d4d4d8; font-size: 14px; font-weight: 500; }
+.mk-nav nav a:not(.btn):hover { color: #fff; }
+.mk-nav .btn { padding: 10px 22px; font-size: 14px; }
+
+.mk-hero { padding: 90px 0 70px; position: relative; overflow: hidden; }
+.mk-hero::before { content: ""; position: absolute; width: 700px; height: 700px; top: -300px; right: -200px; background: radial-gradient(circle, rgba(255, 77, 28, 0.25), transparent 65%); pointer-events: none; }
+.mk-hero .container { display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; position: relative; }
+.mk-hero h1 { font-family: var(--head); font-size: clamp(48px, 7vw, 88px); line-height: 0.95; letter-spacing: 1.5px; margin: 18px 0; }
+.mk-hero p.lead { color: #d4d4d8; font-size: 18px; max-width: 540px; margin-bottom: 30px; }
+.mk-hero .btns { display: flex; gap: 14px; flex-wrap: wrap; }
+.mk-proof { display: flex; gap: 22px; margin-top: 30px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+.mk-proof span { display: inline-flex; align-items: center; gap: 8px; }
+.mk-proof svg { color: #22c55e; }
+
+/* Small "dashboard" preview (pure HTML/CSS) */
+.mk-preview { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); transform: perspective(1200px) rotateY(-8deg) rotateX(4deg); transition: transform 0.6s var(--ease); }
+.mk-preview:hover { transform: none; }
+.mk-preview .bar { display: flex; gap: 6px; margin-bottom: 16px; }
+.mk-preview .bar span { width: 10px; height: 10px; border-radius: 50%; background: #3f3f46; }
+.mk-preview .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.mk-preview .stat { background: var(--bg); border-radius: 10px; padding: 12px; }
+.mk-preview .stat small { color: var(--muted); font-size: 11px; display: block; }
+.mk-preview .stat b { font-size: 20px; }
+.mk-preview .chart { display: flex; align-items: flex-end; gap: 8px; height: 110px; background: var(--bg); border-radius: 10px; padding: 12px; }
+.mk-preview .chart i { flex: 1; background: var(--grad); border-radius: 5px 5px 2px 2px; }
+.mk-preview .row { display: flex; align-items: center; gap: 10px; background: var(--bg); border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+.mk-preview .row .dot { width: 30px; height: 30px; border-radius: 50%; background: var(--grad); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.mk-preview .row em { margin-left: auto; font-style: normal; font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+
+.mk-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.mk-feature { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: transform 0.3s var(--ease), border-color 0.3s; }
+.mk-feature:hover { transform: translateY(-6px); border-color: rgba(255, 77, 28, 0.5); }
+.mk-feature .ic { width: 52px; height: 52px; border-radius: 14px; background: rgba(255, 77, 28, 0.12); color: var(--primary); display: grid; place-items: center; font-size: 22px; margin-bottom: 16px; }
+.mk-feature h3 { font-size: 18px; margin-bottom: 6px; }
+.mk-feature p { color: var(--muted); font-size: 14px; }
+
+.mk-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; counter-reset: step; }
+.mk-step { position: relative; padding: 28px; border-radius: var(--radius); border: 1px dashed var(--border); }
+.mk-step::before { counter-increment: step; content: counter(step); font-family: var(--head); font-size: 56px; line-height: 1; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; display: block; margin-bottom: 8px; }
+.mk-step h3 { margin-bottom: 6px; }
+.mk-step p { color: var(--muted); font-size: 14px; }
+
+.mk-plans { display: grid; grid-template-columns: repeat(2, minmax(0, 380px)); gap: 26px; justify-content: center; }
+.mk-demo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.mk-demo a.gym { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: 0.3s; }
+.mk-demo a.gym:hover { border-color: var(--primary); transform: translateY(-4px); }
+.mk-demo .logo-dot { width: 48px; height: 48px; border-radius: 12px; background: var(--grad); display: grid; place-items: center; font-family: var(--head); font-size: 22px; }
+.mk-demo small { color: var(--muted); display: block; }
+.mk-logins { margin-top: 26px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+.mk-logins table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.mk-logins td, .mk-logins th { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+.mk-logins th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.mk-logins code { background: var(--bg); padding: 2px 8px; border-radius: 6px; font-size: 13px; }
+
+.mk-cta { text-align: center; padding: 90px 0; background: radial-gradient(circle at 50% 0, rgba(255, 77, 28, 0.2), transparent 60%); }
+.mk-footer { border-top: 1px solid var(--border); padding: 28px 0; color: var(--muted); font-size: 13px; }
+.mk-footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 920px) {
+  .mk-hero .container, .mk-grid3, .mk-steps { grid-template-columns: 1fr; }
+  .mk-plans { grid-template-columns: 1fr; }
+  .mk-preview { transform: none; }
+  .mk-nav nav a:not(.btn) { display: none; }
+}

@@ -1,0 +1,394 @@
+// GymFlow — multi-tenant gym SaaS
+// Every gym is a "tenant". All gym data is isolated by gymId.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/* ================= Platform: gyms, users, billing ================= */
+
+enum SaasPlan {
+  STARTER
+  PRO
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum Role {
+  OWNER
+  RECEPTIONIST
+  TRAINER
+}
+
+model Gym {
+  id                   String             @id @default(cuid())
+  slug                 String             @unique // subdomain: ironpulse.gymflow.pk
+  name                 String
+  plan                 SaasPlan           @default(STARTER)
+  subscriptionStatus   SubscriptionStatus @default(TRIALING)
+  trialEndsAt          DateTime?
+  currentPeriodEnd     DateTime?
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  settings     GymSettings?
+  staff        StaffMembership[]
+  features     Feature[]
+  plans        MembershipPlan[]
+  programs     Program[]
+  trainers     Trainer[]
+  classes      ClassSession[]
+  gallery      GalleryImage[]
+  testimonials Testimonial[]
+  faqs         Faq[]
+  leads        Lead[]
+  bookings     Booking[]
+  messages     Message[]
+  subscribers  Subscriber[]
+  members      Member[]
+  payments     Payment[]
+  attendance   Attendance[]
+}
+
+model User {
+  id           String            @id @default(cuid())
+  name         String
+  email        String            @unique
+  passwordHash String
+  isSuperAdmin Boolean           @default(false) // owner of the GymFlow platform
+  createdAt    DateTime          @default(now())
+  memberships  StaffMembership[]
+}
+
+// A user can work at several gyms, with a different role at each
+model StaffMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  gymId     String
+  role      Role
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gymId])
+  @@index([gymId])
+}
+
+/* ================= Website content (per gym) ================= */
+
+model GymSettings {
+  gymId          String   @id
+  gym            Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  tagline        String   @default("Fitness Club")
+  city           String   @default("Islamabad")
+  phone          String   @default("")
+  whatsapp       String   @default("")
+  email          String   @default("")
+  address        String   @default("")
+  mapQuery       String   @default("")
+  currency       String   @default("Rs.")
+  aboutText      String   @default("")
+  aboutPoints    String[]
+  offerText      String   @default("")
+  yearlyDiscount Int      @default(20)
+  admissionFee   Int      @default(0)
+  // JSON: { title[], rotating[], subtitle, image }
+  hero           Json     @default("{}")
+  // JSON: [{ value, suffix, label }]
+  stats          Json     @default("[]")
+  // JSON: [{ day, time }]
+  timings        Json     @default("[]")
+  // JSON: 7 x [open, close] 24h, index 0 = Sunday
+  openHours      Json     @default("[[8,14],[6,23],[6,23],[6,23],[6,23],[6,23],[6,23]]")
+  // JSON: { facebook, instagram, youtube, tiktok }
+  socials        Json     @default("{}")
+  // JSON: { about1, about2, counters, cta }
+  images         Json     @default("{}")
+  updatedAt      DateTime @updatedAt
+}
+
+model Feature {
+  id    String @id @default(cuid())
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  icon  String @default("dumbbell")
+  title String
+  text  String @default("")
+  order Int    @default(0)
+
+  @@index([gymId])
+}
+
+// The gym's own membership packages (Basic / Standard / Premium)
+model MembershipPlan {
+  id       String   @id @default(cuid())
+  gymId    String
+  gym      Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name     String
+  monthly  Int
+  features String[]
+  missing  String[]
+  popular  Boolean  @default(false)
+  order    Int      @default(0)
+
+  @@index([gymId])
+}
+
+model Program {
+  id    String @id @default(cuid())
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  title String
+  text  String @default("")
+  level String @default("")
+  image String @default("")
+  order Int    @default(0)
+
+  @@index([gymId])
+}
+
+model Trainer {
+  id        String @id @default(cuid())
+  gymId     String
+  gym       Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name      String
+  role      String @default("")
+  exp       String @default("")
+  image     String @default("")
+  phone     String @default("")
+  instagram String @default("")
+  facebook  String @default("")
+  order     Int    @default(0)
+
+  @@index([gymId])
+}
+
+enum Weekday {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
+model ClassSession {
+  id      String  @id @default(cuid())
+  gymId   String
+  gym     Gym     @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  day     Weekday
+  time    String
+  name    String
+  trainer String  @default("")
+  room    String  @default("")
+  order   Int     @default(0)
+
+  @@index([gymId, day])
+}
+
+enum GalleryCategory {
+  equipment
+  training
+  classes
+}
+
+model GalleryImage {
+  id       String          @id @default(cuid())
+  gymId    String
+  gym      Gym             @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  image    String
+  category GalleryCategory @default(training)
+  order    Int             @default(0)
+
+  @@index([gymId])
+}
+
+model Testimonial {
+  id     String @id @default(cuid())
+  gymId  String
+  gym    Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name   String
+  result String @default("")
+  text   String @default("")
+  image  String @default("")
+  order  Int    @default(0)
+
+  @@index([gymId])
+}
+
+model Faq {
+  id    String @id @default(cuid())
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  q     String
+  a     String @default("")
+  order Int    @default(0)
+
+  @@index([gymId])
+}
+
+/* ================= Website inbox ================= */
+
+enum LeadStatus {
+  new
+  contacted
+  joined
+  lost
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  gymId     String
+  gym       Gym        @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  plan      String     @default("")
+  time      String     @default("")
+  goal      String     @default("")
+  status    LeadStatus @default(new)
+  notes     String     @default("")
+  createdAt DateTime   @default(now())
+
+  @@index([gymId, status])
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  gymId     String
+  gym       Gym           @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  className String        @default("")
+  day       String        @default("")
+  time      String        @default("")
+  status    BookingStatus @default(pending)
+  createdAt DateTime      @default(now())
+
+  @@index([gymId, status])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  gymId     String
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String   @default("")
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([gymId, read])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  gymId     String
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  email     String
+  createdAt DateTime @default(now())
+
+  @@unique([gymId, email])
+}
+
+/* ================= Members, fees, attendance ================= */
+
+enum Gender {
+  male
+  female
+}
+
+model Member {
+  id         String       @id @default(cuid())
+  gymId      String
+  gym        Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String
+  gender     Gender       @default(male)
+  plan       String       @default("")
+  monthlyFee Int          @default(0)
+  trainer    String       @default("")
+  joinDate   DateTime     @default(now())
+  expiryDate DateTime
+  notes      String       @default("")
+  active     Boolean      @default(true) // false = member left the gym
+  qrToken    String       @unique // digital card QR (impossible to guess)
+  createdAt  DateTime     @default(now())
+  payments   Payment[]
+  attendance Attendance[]
+
+  @@index([gymId, expiryDate])
+}
+
+enum PaymentMethod {
+  cash
+  bank
+  jazzcash
+  easypaisa
+  card
+}
+
+enum PaymentType {
+  fee
+  admission
+  personal_training
+  other
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  gymId        String
+  gym          Gym           @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberName   String
+  amount       Int
+  months       Int           @default(1)
+  method       PaymentMethod @default(cash)
+  type         PaymentType   @default(fee)
+  note         String        @default("")
+  paidAt       DateTime      @default(now())
+  receivedById String? // staff member who collected the fee
+
+  @@index([gymId, paidAt])
+  @@index([memberId])
+}
+
+enum CheckInMethod {
+  QR
+  MANUAL
+}
+
+model Attendance {
+  id          String        @id @default(cuid())
+  gymId       String
+  gym         Gym           @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  checkedInAt DateTime      @default(now())
+  method      CheckInMethod @default(QR)
+  byUserId    String?
+
+  @@index([gymId, checkedInAt])
+  @@index([memberId, checkedInAt])
+}

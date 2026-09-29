@@ -1,0 +1,36 @@
+/* Shared: variables + reset (site and dashboard) */
+/* ================= VARIABLES ================= */
+:root {
+  --primary: #ff4d1c;
+  --primary-2: #ff9a1c;
+  --grad: linear-gradient(135deg, var(--primary), var(--primary-2));
+  --bg: #0a0a0c;
+  --bg-2: #111115;
+  --card: #17171c;
+  --border: #26262e;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --radius: 14px;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --head: var(--font-head), "Bebas Neue", sans-serif;
+  --body: var(--font-body), "Poppins", sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; overflow-x: clip; }
+body { font-family: var(--body); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: clip; }
+body.no-scroll { overflow: hidden; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; border: none; background: none; color: inherit; }
+.container { width: min(1200px, 100% - 32px); margin-inline: auto; }
+.hidden { display: none !important; }
+.accent { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+::selection { background: var(--primary); color: #fff; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
