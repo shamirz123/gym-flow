@@ -1,9 +1,11 @@
 import type { SiteData } from "./types";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050";
+// Env values are cleaned up, so "https://api.example.com/" (trailing slash) still works
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050").trim().replace(/\/+$/, "");
 // Inside Docker, the server may reach the backend on a different URL
-const SERVER_API_URL = process.env.API_URL_INTERNAL || API_URL;
-export const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+const SERVER_API_URL = (process.env.API_URL_INTERNAL || API_URL).trim().replace(/\/+$/, "");
+// Just the host (+ port) — even if written as "https://gymflow.pk/"
+export const ROOT_DOMAIN = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000").trim().replace(/^https?:\/\//, "").replace(/\/+$/, "");
 const IS_LOCAL = /localhost|127\.0\.0\.1/.test(ROOT_DOMAIN);
 export const PROTOCOL = IS_LOCAL ? "http" : "https";
 export const SITE_URL = `${PROTOCOL}://${ROOT_DOMAIN}`;

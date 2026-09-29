@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { API_URL } from "@/lib/api";
 
-const SERVER_API_URL = process.env.API_URL_INTERNAL || API_URL;
+const SERVER_API_URL = (process.env.API_URL_INTERNAL || API_URL).replace(/\/+$/, "");
 
 // When the dashboard saves content, refresh that gym's website cache immediately
 export async function POST(request: Request) {

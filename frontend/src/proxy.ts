@@ -6,7 +6,8 @@ import { NextResponse, type NextRequest } from "next/server";
  *   localhost:3000/                  →  SaaS landing page
  *   localhost:3000/dashboard, /login →  dashboard (shared by all gyms)
  */
-const ROOT = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000").toLowerCase();
+// Just the host (+ port) — even if written as "https://gymflow.pk/"
+const ROOT = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/+$/, "");
 const ROOT_HOST = ROOT.replace(/:\d+$/, "");
 
 function gymSlug(host: string) {

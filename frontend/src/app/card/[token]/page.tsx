@@ -27,7 +27,7 @@ const STATUS = {
 
 export default async function MemberCard({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const server = process.env.API_URL_INTERNAL || API_URL;
+  const server = (process.env.API_URL_INTERNAL || API_URL).replace(/\/+$/, "");
   const res = await fetch(`${server}/api/public/card/${encodeURIComponent(token)}`, { cache: "no-store" }).catch(() => null);
   const card: Card | null = res?.ok ? await res.json() : null;
 

@@ -14,8 +14,16 @@ const schema = z.object({
   PORT: z.coerce.number().default(5050),
   DATABASE_URL: z.string().min(1, "Set DATABASE_URL in .env"),
   JWT_SECRET: z.string().min(16, "JWT_SECRET must be at least 16 characters"),
-  CLIENT_URL: z.string().default("http://localhost:3000"),
-  ROOT_DOMAIN: z.string().default("localhost:3000"),
+  // Comma-separated frontend URLs; trailing slashes removed (browsers send the origin without one)
+  CLIENT_URL: z
+    .string()
+    .default("http://localhost:3000")
+    .transform((s) => s.split(",").map((u) => u.trim().replace(/\/+$/, "")).filter(Boolean).join(",")),
+  // Just the host (+ port) — even if written as "https://gymflow.pk/"
+  ROOT_DOMAIN: z
+    .string()
+    .default("localhost:3000")
+    .transform((s) => s.trim().replace(/^https?:\/\//, "").replace(/\/+$/, "")),
   ADMIN_EMAIL: z.string().email().default("admin@gym.com"),
   ADMIN_PASSWORD: z.string().min(8).default("admin12345"),
   STRIPE_SECRET_KEY: z.string().optional().default(""),

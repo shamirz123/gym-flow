@@ -6,3 +6,7 @@ dist
 src/generated
 coverage
 .pgdata
+
+.vercel
+.env*
+!.env.example
