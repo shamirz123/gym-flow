@@ -1,14 +1,17 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
+import helmetModule from "helmet";
 import { env, isTest } from "./env.js";
 import { errorHandler, notFoundRoute } from "./lib/http.js";
+import { interopDefault } from "./lib/interop.js";
 import { UPLOAD_DIR } from "./lib/upload.js";
 import { handleWebhook } from "./lib/billing.js";
 import publicRoutes from "./routes/public.js";
 import authRoutes from "./routes/auth.js";
 import gymRoutes from "./routes/gym/index.js";
 import platformRoutes from "./routes/platform.js";
+
+const helmet = interopDefault(helmetModule);
 
 // App factory, so tests (supertest) can run it without opening a port
 export function createApp() {

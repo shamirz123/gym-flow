@@ -1,10 +1,11 @@
 import { Router } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimitModule from "express-rate-limit";
 import { z } from "zod";
 import { prisma } from "../db.js";
 import { env, isTest } from "../env.js";
 import { checkPassword, hashPassword, requireAuth, signToken } from "../lib/auth.js";
 import { HttpError } from "../lib/http.js";
+import { interopDefault } from "../lib/interop.js";
 import { permissionsFor } from "../lib/permissions.js";
 import { subscriptionState } from "../lib/plans.js";
 import { password, signupSchema } from "../lib/schemas.js";
@@ -12,6 +13,7 @@ import { RESERVED_SLUGS, SLUG_RE } from "../lib/util.js";
 import { starterContent } from "../lib/starter-content.js";
 
 const r = Router();
+const rateLimit = interopDefault(rateLimitModule);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,

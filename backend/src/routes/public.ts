@@ -1,9 +1,10 @@
 import { Router, type RequestHandler } from "express";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimitModule, { ipKeyGenerator } from "express-rate-limit";
 import QRCode from "qrcode";
 import { prisma } from "../db.js";
 import { env, isTest } from "../env.js";
 import { HttpError } from "../lib/http.js";
+import { interopDefault } from "../lib/interop.js";
 import { SAAS_PLANS, subscriptionState } from "../lib/plans.js";
 import { publicForms, WEEKDAYS } from "../lib/schemas.js";
 import { memberStatus, RESERVED_SLUGS, SLUG_RE } from "../lib/util.js";
@@ -12,6 +13,7 @@ import { memberStatus, RESERVED_SLUGS, SLUG_RE } from "../lib/util.js";
  * /api/public/* — gym websites (no login required)
  */
 const r = Router();
+const rateLimit = interopDefault(rateLimitModule);
 
 // Find the gym by slug. If its subscription is inactive, the website is offline too
 const loadGym: RequestHandler = async (req, _res, next) => {
